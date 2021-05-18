@@ -16,6 +16,15 @@ If you wish to decrypt a file during runtime, you could use –ask-vault-pass fl
 	ansible-playbook launch.yml --ask-vault-pass
 	ansible-playbook -i node_hosts git_repository.yaml --ask-vault-pass
 
+
+Added User ssh key
+	
+	ansible-playbook -i node_hosts add_user_sshkey.yml
+
+Install to Docker
+
+	ansible-playbook -i node_hosts docker.yml
+
 ------------------------------------------------------
 
 Ansible lookup file – How to Read file into variable in Ansible

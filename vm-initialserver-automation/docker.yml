@@ -1,0 +1,77 @@
+---
+- hosts: web-servers
+  become: true
+  become_user: root
+
+  vars_files:
+    - vars/default.yml
+
+  tasks:
+    - name: Install aptitude using apt
+      apt:
+        name: aptitude
+        state: latest
+        update_cache: yes
+        force_apt_get: yes
+   
+    - name: Install required system packages
+      apt:
+        name: "{{item.pkname}}"
+        state: present
+        update_cache: yes
+      loop:
+        - pkname: apt-transport-https
+        - pkname: ca-certificates
+        - pkname: curl
+        - pkname: software-properties-common
+        - pkname: python3-pip
+        - pkname: virtualenv
+        - pkname: python3-setuptools
+        - pkname: gnupg2 
+
+    - name: Add Docker GPG apt signing Key from official docker repo
+      apt_key:
+        url: https://download.docker.com/linux/debian/gpg
+        state: present
+
+    - name: Add Docker official epository for Debian Stretch
+      apt_repository:
+        repo: deb [arch=amd64] https://download.docker.com/linux/debian stretch stable
+        state: present
+
+    - name: Index new repo into the cache
+      become: yes
+      apt:
+        name: "*"
+        state: latest
+        update_cache: yes
+        force_apt_get: yes
+
+    - name: Update apt and install docker-ce
+      apt:
+        name: "{{item.dpkname}}"
+        state: latest
+        update_cache: yes
+      loop:
+        - dpkname: docker-ce
+        - dpkname: docker-ce-cli
+        - dpkname: containerd.io
+
+    - name: Add a user to a docker group 
+      user:
+        name: "{{ item.gusname }}"
+        groups: docker
+        append: yes
+      with_items: "{{ groupuser }}"
+
+    - name: Make sure docker is active
+      service:
+          name: docker
+          state: started
+          enabled: yes
+
+  handlers:
+    - name: restart docker
+      service: 
+         name: docker 
+         state: restarted

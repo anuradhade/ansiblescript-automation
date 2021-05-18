@@ -1,0 +1,10 @@
+---
+- hosts: my-egn-servers
+  become: true
+  become_user: root
+
+
+  tasks:
+     
+     - name: Reboot the machine with all defaults using Ansible
+       reboot:
