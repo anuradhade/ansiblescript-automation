@@ -1,0 +1,142 @@
+---
+- hosts: web-servers
+  become: true
+  become_user: root
+
+  vars_files:
+    - vars/default.yml
+    - vars/secrets.yml
+
+  tasks:
+    - name: Update apt repo and cache on all Debian/Ubuntu
+      apt:
+        update_cache: yes
+    
+    - name: Upgrade all packages on servers
+      apt:
+        upgrade: dist
+        force_apt_get: yes
+   
+    - name: Install Packages
+      apt: 
+        name={{ item.pname }} 
+        update_cache=yes 
+        state=latest
+      with_items: "{{ ubpackage }}"
+
+    - name: Allow everything and enable UFW
+      ufw:
+        state: enabled
+        policy: allow
+    
+    - name: Allow all access to SSH new port 5522    
+      ufw:
+        rule: allow
+        port: "{{ configured_port }}"
+        proto: tcp	
+
+    - name: UFW - All all other outcoming traffic by default
+      ufw:
+        state: enabled
+        policy: allow
+        direction: outgoing
+
+    - name: Set timezone to Asia/Colombo
+      timezone:
+         name: Asia/Colombo
+
+    - name: Set Server Hostname "{{ server_hostname }}"
+      hostname:
+         name: "{{ server_hostname }}"
+
+# Change Default SSh Port and restart SSH Service 
+    - name: Setup alternate SSH port
+      lineinfile:
+        dest: "/etc/ssh/sshd_config"
+        regexp: "^Port"
+        line: "Port {{ configured_port }}"
+    #  notify:
+    #  - restart sshd
+
+# Create users and group
+    - name: Adding "{{ create_group }}" group
+      group:
+        name: "{{ create_group }}"
+        state: present
+
+    - name: Add new user to the development machine and assign the appropriate groups.
+      user:
+        name: "{{ item.usname }}"
+        password: "{{ uspass | password_hash('sha512') }}"
+        update_password: on_create
+        createhome: yes
+        shell: /bin/bash
+        groups: "{{ create_group }}"
+        append: yes
+      with_items: "{{ users }}"
+
+
+    - name: Ensuring that "{{ create_group }}" is able to use sudo without password
+      lineinfile:
+        path: /etc/sudoers
+        state: present
+        regexp: '^%{{ create_group }}'
+        line: '%{{ create_group }} ALL=(ALL) NOPASSWD: ALL'
+        validate: 'visudo -cf %s'
+    
+    - name: Add a user to a group root,sudo
+      user:
+        name: "{{ item.gusname }}"
+        groups: root,sudo
+        append: yes
+      with_items: "{{ groupuser }}"
+
+    - name: Allow all access to tcp port
+      ufw:
+        rule: allow
+        port: '{{ item.other_port }}'
+        proto: tcp
+      with_items: "{{ allow_port }}"
+
+    - name: Update the /etc/hosts file with node name "{{ hostvars[item]['ansible_default_ipv4']['address'] }}\t{{ hostvars[item]['ansible_hostname']}}"
+      lineinfile:
+        dest: /etc/hosts
+        regexp: ".*\t{{ hostvars[item]['ansible_hostname']}}\t{{ hostvars[item]['ansible_hostname']}}"
+        line: "{{ hostvars[item]['ansible_default_ipv4']['address'] }}\t{{ hostvars[item]['ansible_hostname']}}\t{{ hostvars[item]['ansible_hostname']}}"
+        state: present
+      with_items: '{{ groups["all"] }}' 
+
+    - name: "Copy the public Key using Lookup"
+      authorized_key:
+        user: anuradha
+        state: present
+        key: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"   
+
+    - name: Disable Root Login
+      lineinfile:
+           dest=/etc/ssh/sshd_config
+           regexp='^PermitRootLogin'
+           line="PermitRootLogin no"
+           state=present
+           #backup=yes
+      #notify:
+      # - restart sshd  
+
+    - name: Disable Password Authentication
+      lineinfile:
+           dest=/etc/ssh/sshd_config
+           regexp='^PasswordAuthentication'
+           line="PasswordAuthentication no"
+           state=present
+           backup=yes
+      notify:
+       - restart sshd    
+ 
+
+  handlers:
+    - name: restart sshd
+      service: 
+         name=sshd 
+         state=restarted 
+
+

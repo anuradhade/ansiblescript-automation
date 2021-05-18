@@ -1,0 +1,52 @@
+---
+server_hostname: "webapp-qa-node01"
+configured_port: "5522"
+
+ubpackage:
+    - pname: curl
+    - pname: git
+    - pname: build-essential
+    - pname: libssl-dev
+    - pname: zlib1g-dev 
+    - pname: libncurses5-dev 
+    - pname: libgdbm-dev 
+    - pname: libnss3-dev 
+    - pname: libreadline-dev 
+    - pname: libffi-dev
+    - pname: software-properties-common
+    - pname: apt-transport-https
+    - pname: net-tools
+    - pname: ufw
+    - pname: wget
+    - pname: libcap2-bin
+    - pname: vim
+    - pname: telnet
+    - pname: lsof
+    - pname: python3-pip
+    - pname: python3-setuptools
+
+
+users:
+  - usname: anuradha
+  - usname: madhumal
+  - usname: yohan
+  - usname: anjula
+  - usname: webuser
+
+create_group: "wheel"
+
+groupuser: 
+   - gusname: anuradha
+   - gusname: webuser
+
+
+
+allow_port:            
+    - other_port: "3306"
+    - other_port: "3000"
+    - other_port: "5000"
+
+
+
+users_to_remove:
+    - name: user1

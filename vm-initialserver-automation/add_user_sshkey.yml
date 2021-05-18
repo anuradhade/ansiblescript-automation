@@ -1,0 +1,34 @@
+---
+- hosts: web-servers
+  become: true
+  become_user: root
+
+
+  tasks:
+     
+
+    - name: "Copy the User-1 public Key Using the Key directly within Playbook"
+      authorized_key:
+        user: madhumal
+        state: present
+        key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDVuouhgsM3oPG6/XoWwsGjdHIfsPZ+s9LYFouDDARAhssT/PhWebqzmcLEMO7zuQKjkdvRmQ0ulilSsrDSrsao631WHg5ShLNi9NLsNnl7sENrrOaY5Ggd+0qjkdfzfWu6PdbmSU9ZEN8qYFi7JXoObtX7xtJSbNd4tOpij7BN6XOG7fK6LooZhFL8Od9rQMSN8jMk582aokRqI9TPUmTPhnMBfWfN9CjNlJ3y5oqAms/y536Bekjk9EN+jXLoBEHNlTMWPoqie8cEX8dFvBTxUIVfQC9keJZMEleaiKmyo+/1mrDlK+qV/3VBPPzjHx00C+3+LStiX7ORrUaA3d4T madhumal@madhumal-Aspire-5742"
+
+    - name: "Copy the User-2 public Key Using the Key directly within Playbook"
+      authorized_key:
+        user: yohan
+        state: present
+        key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQC36mbR7MYVToMFiTy6vHeAOHnD6s0zD2EsbeOvSxyfSSqI0KvnU6RlU5IPRjR2UHNWr+i5tJC/Z9tYEV79R4Z94r9Son82laLzsWy1dhoN45Wv1+DM0zPlt3cWung0ldmH0Nk9TaiZdBp1gdA04k6rPdJDG6AbzmTkbM8OtcnLUGg3QlNfwHbBN/xCH4dljgW9CFwp92K2cSertltU3/WMpxtu2R9hFWQfYnhUZlAQJ7j9pt5XSnWIHLMF+7D5p1uCxaFx2us0YD4YzNCDlGYcpWGVgUEPXiTJy6yHStHrPe/vkjr84Qe4oeifZ8Y0fkArFnZNg+nDMsGYkyYn9dDiJAFVZfcdt1dcAksQjrAKxzLn/G0pQ1Lgw5HujDvdaGCg7Ze4rlvfF4Mfm2KoFpdFHhRryiFji4WktoqUFLpCUkI7Ouyvt5toYxnAKN0IqrAgPrs5JAdK5+pL5MLETVFU15sCRjKo9TesGusVFPVPrZbZ6qPL99p7csRqtdz1Go3tW5QiIUh8AZl4YveA62oIDCJGlW7ZnCDqQ7er2XVk7GZ6FDiZ9t+uDJIKVDqpfhCtJoSFIqEVT5fjzEK3TW+KkoyqMaxCgeKpgSxkQcnqGR82PGWs1LxIH+kNbD6eHz/yX+oIRAnHgluWIqkRgctUcS6Qph2zQkxRDh4ABEMrvw== yohanperera27@gmail.com"
+
+    - name: "Copy the User-3 public Key Using the Key directly within Playbook"
+      authorized_key:
+        user: anjula
+        state: present
+        key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC/ZheJIrJVPDhAj4w3mOaNlmX+umw9AJTA5MU6NACEBoP1bCiYHyzT9z0sp5xql5RTb7XQYbsqy0AcFYuQ9yNoI05d0hLnBWnjcYqBrREvfoYJKIJ7ljYmie5sba2xmp6aUmJMcN+sbDv5NP3WgK3QPxIZdTWN1wDM0i/5h0qSUAvK03mPnfOes6pLojrlt1qWKhl+KLq/pbgfG1Wt4zbLg1Ll1gyNVJiiUzMRME3Pv6qZD1n8jZLcS/1fiG7DQMLi9UQuHB8ktbbLPXe4gbg3AJFYVZohk5J7JB8Xoy5yCVcLMqmwzZsZODcT62TpRmW8Kb0aBrTKUnb/5ByF8ys7 anjula@emageia.com"
+
+
+#    - name: "Copy the public Key using Lookup"
+#      authorized_key:
+#        user: devops
+#        state: present
+#        key: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
+

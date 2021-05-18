@@ -1,0 +1,10 @@
+#[web-servers]
+#194.195.208.23  ansible_user=root
+
+
+
+[web-servers]
+#194.195.208.23  ansible_user=root ansible_port=5522
+194.195.208.23  ansible_user=anuradha ansible_port=5522
+
+
